@@ -5,6 +5,7 @@
       <div :class="$style.searchContainer">
         <TextBox
           :class="$style.searchInput"
+          placeholder="Search"
           @input="onTextChanged"
         />
         <Button
