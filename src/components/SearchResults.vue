@@ -13,7 +13,7 @@
         >
           <img
             :class="$style.moviePosterImg"
-            :src="movie.posterUrl"
+            v-lazy="{ src: movie.posterUrl, loading: require('@/assets/images/png/loading.png') }"
             alt="Movie poster"
           />
           <div :class="$style.movieTitleContainer">
@@ -37,7 +37,6 @@
       </span>
     </Container>
   </Section>
-
 </template>
 
 <script lang="ts">

@@ -1,9 +1,6 @@
 <template>
   <header :class="$style.header">
-    <a
-      :class="$style.brandLogo"
-      href=""
-    >
+    <a href="">
       <img
         :class="$style.brandLogoImg"
         src="@/assets/icons/svg/brand-logo.svg"
@@ -45,9 +42,6 @@ export default class Header extends Vue {}
   display: flex;
   justify-content: space-between;
   padding: 12px 0;
-}
-
-.brandLogo {
 }
 
 .searchButton {
