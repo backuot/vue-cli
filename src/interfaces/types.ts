@@ -1,4 +1,8 @@
-export interface Movie {
+interface State {
+  movies: Movie[],
+}
+
+interface Movie {
   id: string;
   title: string;
   year: string;
@@ -10,3 +14,5 @@ export interface Movie {
   posterUrl: string;
   rating: string;
 }
+
+export { State, Movie };

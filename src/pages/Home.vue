@@ -20,7 +20,7 @@
     @sort-changed="onSortChanged"
   />
   <SearchResults
-    :movies="movies"
+    :movies="store.state.movies"
     @movie-clicked="onMovieClicked"
   />
   <Footer />
@@ -28,21 +28,16 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import { useStore } from 'vuex';
+import { key } from '@/store';
 import Hero from '@/components/Hero.vue';
 import Footer from '@/components/Footer.vue';
 import SearchResults from '@/components/SearchResults.vue';
-import * as data from '@/api/movies.json';
-import { Movie } from '@/interfaces/types';
 import Header from '@/components/Header.vue';
 import SearchPanel from '@/components/SearchPanel.vue';
 import MoviePanel from '@/components/MoviePanel.vue';
 import SortPanel from '@/components/SortPanel.vue';
 import filters from '@/utlis/filters';
-
-const DATE_SORT_TYPE = 0;
-const RATING_SORT_TYPE = 1;
-const TITLE_FIND_TYPE = 0;
-const GENRE_FIND_TYPE = 1;
 
 @Options({
   components: {
@@ -54,11 +49,11 @@ const GENRE_FIND_TYPE = 1;
   },
 })
 export default class Home extends Vue {
-  movies: Movie[] = [];
-
   content = {
     movie: {},
-  }
+  };
+
+  store: any = {}
 
   currentGenres: string[] = [];
 
@@ -71,7 +66,8 @@ export default class Home extends Vue {
   isSortRadioVisible = true;
 
   created(): void {
-    this.resetMovies();
+    this.store = useStore(key);
+    this.store.commit('resetMovies');
     this.onSortChanged(0);
   }
 
@@ -80,23 +76,9 @@ export default class Home extends Vue {
       return;
     }
 
-    this.resetMovies();
-
-    this.movies = this.movies.filter((movie: Movie) => {
-      const pattern = new RegExp(`^${value}`, 'i');
-
-      if (option === TITLE_FIND_TYPE) {
-        return pattern.test(movie.title);
-      }
-
-      if (option === GENRE_FIND_TYPE) {
-        return movie.genres.some((genre: string) => pattern.test(genre));
-      }
-
-      return false;
-    });
-
-    this.currentResultsCount = this.movies.length;
+    this.store.commit('resetMovies');
+    this.store.commit('searchMovies', { value, option });
+    this.currentResultsCount = this.store.state.movies.length;
   }
 
   onSearchClicked(): void {
@@ -104,39 +86,26 @@ export default class Home extends Vue {
     this.isSearchButtonVisible = false;
     this.isSortRadioVisible = true;
     this.currentGenres = [];
-    this.resetMovies();
+    this.store.commit('resetMovies');
     this.onSortChanged(0);
     this.currentResultsCount = 0;
   }
 
-  onMovieClicked(movie: Movie): void {
+  onMovieClicked(id: string): void {
     if (this.isSearchPanelVisible) {
       this.isSearchPanelVisible = false;
       this.isSearchButtonVisible = true;
       this.isSortRadioVisible = false;
     }
+    const movie = this.store.getters.getMovie(id);
     this.content.movie = movie;
-    this.movies = filters.moviesByGenres(this.movies, movie.genres);
+    this.store.commit('filterMovies', movie.genres);
     this.currentGenres = movie.genres;
     window.scrollTo(0, 0);
   }
 
   onSortChanged(value: number): void {
-    this.movies.sort((a: Movie, b: Movie) => {
-      if (value === DATE_SORT_TYPE) {
-        return Number(b.year) - Number(a.year);
-      }
-
-      if (value === RATING_SORT_TYPE) {
-        return Number(b.rating) - Number(a.rating);
-      }
-
-      return 0;
-    });
-  }
-
-  resetMovies(): void {
-    this.movies = data.movies as never || [];
+    this.store.commit('sortMovies', { value });
   }
 
   get contentComponent(): any {

@@ -9,7 +9,7 @@
           v-for="movie in movies"
           :class="$style.movie"
           :key="movie.id"
-          @click="onMovieClicked(movie)"
+          @click="onMovieClicked(movie.id)"
         >
           <img
             :class="$style.moviePosterImg"
@@ -60,8 +60,8 @@ import filters from '@/utlis/filters';
 export default class SearchResults extends Vue {
   genresText = filters.genresText;
 
-  onMovieClicked(movie: Movie): void {
-    this.$emit('movie-clicked', movie);
+  onMovieClicked(id: string): void {
+    this.$emit('movie-clicked', id);
   }
 }
 </script>
