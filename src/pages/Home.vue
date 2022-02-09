@@ -20,7 +20,7 @@
     @sort-changed="onSortChanged"
   />
   <SearchResults
-    :movies="store.state.movies"
+    :movies="movies"
     @movie-clicked="onMovieClicked"
   />
   <Footer />
@@ -28,8 +28,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import { useStore } from 'vuex';
-import { key } from '@/store';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import Hero from '@/components/Hero.vue';
 import Footer from '@/components/Footer.vue';
 import SearchResults from '@/components/SearchResults.vue';
@@ -38,6 +37,14 @@ import SearchPanel from '@/components/SearchPanel.vue';
 import MoviePanel from '@/components/MoviePanel.vue';
 import SortPanel from '@/components/SortPanel.vue';
 import filters from '@/utlis/filters';
+import { Movie } from '@/interfaces/types';
+import {
+  TITLE_FIND_TYPE,
+  GENRE_FIND_TYPE,
+  DATE_SORT_TYPE,
+  RATING_SORT_TYPE,
+  DESC_SORT_ORDER,
+} from '@/constants';
 
 @Options({
   components: {
@@ -47,17 +54,30 @@ import filters from '@/utlis/filters';
     Footer,
     Hero,
   },
+  computed: {
+    ...mapState({
+      movies: 'movies',
+    }),
+    ...mapGetters({
+      getMovie: 'getMovie',
+    }),
+  },
+  methods: {
+    ...mapActions({
+      fetchMovies: 'fetchMovies',
+    }),
+  },
 })
 export default class Home extends Vue {
   content = {
     movie: {},
   };
 
-  store: any = {}
-
   currentGenres: string[] = [];
 
   currentResultsCount = 0;
+
+  currentOptions = {};
 
   isSearchPanelVisible = true;
 
@@ -65,9 +85,13 @@ export default class Home extends Vue {
 
   isSortRadioVisible = true;
 
+  movies!: Movie[];
+
+  fetchMovies!: (params?: any) => Promise<void>;
+
+  getMovie!: (id: string) => Movie;
+
   created(): void {
-    this.store = useStore(key);
-    this.store.commit('resetMovies');
     this.onSortChanged(0);
   }
 
@@ -76,9 +100,14 @@ export default class Home extends Vue {
       return;
     }
 
-    this.store.commit('resetMovies');
-    this.store.commit('searchMovies', { value, option });
-    this.currentResultsCount = this.store.state.movies.length;
+    Object.assign(this.currentOptions, {
+      search: value,
+      searchBy: option ? GENRE_FIND_TYPE : TITLE_FIND_TYPE,
+    });
+
+    this.fetchMovies({ ...this.currentOptions }).then(() => {
+      this.currentResultsCount = this.movies.length;
+    });
   }
 
   onSearchClicked(): void {
@@ -86,9 +115,9 @@ export default class Home extends Vue {
     this.isSearchButtonVisible = false;
     this.isSortRadioVisible = true;
     this.currentGenres = [];
-    this.store.commit('resetMovies');
-    this.onSortChanged(0);
     this.currentResultsCount = 0;
+    this.currentOptions = {};
+    this.fetchMovies();
   }
 
   onMovieClicked(id: string): void {
@@ -97,15 +126,21 @@ export default class Home extends Vue {
       this.isSearchButtonVisible = true;
       this.isSortRadioVisible = false;
     }
-    const movie = this.store.getters.getMovie(id);
+
+    const movie = this.getMovie(id);
     this.content.movie = movie;
-    this.store.commit('filterMovies', movie.genres);
     this.currentGenres = movie.genres;
     window.scrollTo(0, 0);
+    this.fetchMovies({ filter: movie.genres });
   }
 
   onSortChanged(value: number): void {
-    this.store.commit('sortMovies', { value });
+    Object.assign(this.currentOptions, {
+      sortBy: value ? RATING_SORT_TYPE : DATE_SORT_TYPE,
+      sortOrder: DESC_SORT_ORDER,
+    });
+
+    this.fetchMovies({ ...this.currentOptions });
   }
 
   get contentComponent(): any {

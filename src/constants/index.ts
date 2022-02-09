@@ -1,4 +1,5 @@
-export const DATE_SORT_TYPE = 0;
-export const RATING_SORT_TYPE = 1;
-export const TITLE_FIND_TYPE = 0;
-export const GENRE_FIND_TYPE = 1;
+export const DATE_SORT_TYPE = 'release_date';
+export const RATING_SORT_TYPE = 'vote_average';
+export const TITLE_FIND_TYPE = 'title';
+export const GENRE_FIND_TYPE = 'genres';
+export const DESC_SORT_ORDER = 'desc';

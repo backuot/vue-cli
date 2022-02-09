@@ -17,8 +17,13 @@ function moviesByGenres(movies: Movie[], genres: string[]): Movie[] {
     .filter((genre: string) => genres.includes(genre)).length > 0);
 }
 
+function yearText(date: string) {
+  return date.split('-')[0];
+}
+
 export default {
   genresText,
   durationText,
   moviesByGenres,
+  yearText,
 };

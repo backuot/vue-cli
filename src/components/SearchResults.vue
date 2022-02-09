@@ -13,7 +13,7 @@
         >
           <img
             :class="$style.moviePosterImg"
-            v-lazy="{ src: movie.posterUrl, loading: require('@/assets/images/png/loading.png') }"
+            v-lazy="{ src: movie.poster_path, loading: require('@/assets/images/png/loading.png') }"
             alt="Movie poster"
           />
           <div :class="$style.movieTitleContainer">
@@ -21,7 +21,7 @@
             {{ movie.title }}
           </span>
             <span :class="$style.movieYear">
-            {{ movie.year }}
+            {{ yearText(movie.release_date) }}
           </span>
           </div>
           <span :class="$style.movieGenres">
@@ -43,7 +43,6 @@
 import { Options, Vue } from 'vue-class-component';
 import Section from '@/components/ui/Section.vue';
 import Container from '@/components/ui/Container.vue';
-import { Movie } from '@/interfaces/types';
 import filters from '@/utlis/filters';
 
 @Options({
@@ -59,6 +58,8 @@ import filters from '@/utlis/filters';
 })
 export default class SearchResults extends Vue {
   genresText = filters.genresText;
+
+  yearText = filters.yearText;
 
   onMovieClicked(id: string): void {
     this.$emit('movie-clicked', id);

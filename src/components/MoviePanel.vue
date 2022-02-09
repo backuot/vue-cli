@@ -2,17 +2,17 @@
   <div :class="$style.moviePanel">
     <img
       :class="$style.moviePosterImg"
-      :src="movie.posterUrl"
+      :src="movie.poster_path"
       alt="Movie poster"
     />
     <div :class="$style.movieDetails">
       <div :class="$style.movieTitleContainer">
         <span :class="$style.movieTitle">{{ movie.title }}</span>
-        <span :class="$style.movieRating">{{ movie.rating }}</span>
+        <span :class="$style.movieRating">{{ movie.vote_average }}</span>
       </div>
       <span :class="$style.movieGenres">{{ genresText(movie.genres) }}</span>
       <div :class="$style.timeContainer">
-        <span :class="$style.year">{{ movie.year }}</span>
+        <span :class="$style.year">{{ yearText(movie.release_date) }}</span>
         <span :class="$style.duration">{{ durationText(movie.runtime) }}</span>
       </div>
       <p :class="$style.plot">{{ movie.plot }}</p>
@@ -34,6 +34,8 @@ export default class MoviePanel extends Vue {
   genresText = filters.genresText;
 
   durationText = filters.durationText;
+
+  yearText = filters.yearText;
 }
 </script>
 
