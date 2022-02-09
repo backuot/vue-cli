@@ -117,7 +117,9 @@ export default class Home extends Vue {
     this.currentGenres = [];
     this.currentResultsCount = 0;
     this.currentOptions = {};
-    this.fetchMovies();
+    this.fetchMovies().then(() => {
+      this.$router.replace('/');
+    });
   }
 
   onMovieClicked(id: string): void {
@@ -130,8 +132,10 @@ export default class Home extends Vue {
     const movie = this.getMovie(id);
     this.content.movie = movie;
     this.currentGenres = movie.genres;
-    window.scrollTo(0, 0);
-    this.fetchMovies({ filter: movie.genres });
+    this.fetchMovies({ filter: movie.genres }).then(() => {
+      this.$router.push('/movie');
+      window.scrollTo(0, 0);
+    });
   }
 
   onSortChanged(value: number): void {

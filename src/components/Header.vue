@@ -1,6 +1,6 @@
 <template>
   <header :class="$style.header">
-    <a href="">
+    <a href="/">
       <img
         :class="$style.brandLogoImg"
         src="@/assets/icons/svg/brand-logo.svg"

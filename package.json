@@ -20,6 +20,7 @@
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
     "vue-property-decorator": "^9.1.2",
+    "vue-router": "4",
     "vue3-lazyload": "^0.2.5-beta",
     "vuex": "^4.0.2"
   },
